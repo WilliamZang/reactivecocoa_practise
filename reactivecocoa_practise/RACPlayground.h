@@ -7,5 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <UIKit/UIKit.h>
 void rac_playground();
+
+@interface ExampleViewController: UIViewController
+
+
+
+@end
+
