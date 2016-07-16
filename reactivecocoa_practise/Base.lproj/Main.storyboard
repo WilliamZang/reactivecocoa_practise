@@ -75,20 +75,9 @@
                                     <constraint firstItem="uGd-MR-RVn" firstAttribute="centerY" secondItem="svX-YK-KHv" secondAttribute="centerY" id="vHT-Ks-o3U"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7w9-w2-COM" userLabel="Grid">
-                                <rect key="frame" x="60" y="174" width="480" height="253"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pet1" translatesAutoresizingMaskIntoConstraints="NO" id="2xB-es-jLQ" userLabel="pet">
-                                        <rect key="frame" x="37" y="72.5" width="37" height="36"/>
-                                    </imageView>
-                                </subviews>
+                            <view tag="-1" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7w9-w2-COM" userLabel="Grid">
+                                <rect key="frame" x="60" y="173" width="480" height="253"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstItem="2xB-es-jLQ" firstAttribute="width" secondItem="7w9-w2-COM" secondAttribute="width" multiplier="1:13" id="a7A-1d-noD"/>
-                                    <constraint firstItem="2xB-es-jLQ" firstAttribute="height" secondItem="7w9-w2-COM" secondAttribute="height" multiplier="1:7" id="fFE-2e-x9x"/>
-                                    <constraint firstItem="2xB-es-jLQ" firstAttribute="top" secondItem="7w9-w2-COM" secondAttribute="bottom" multiplier="2:7" id="irj-u0-VUh"/>
-                                    <constraint firstItem="2xB-es-jLQ" firstAttribute="left" secondItem="7w9-w2-COM" secondAttribute="right" multiplier="1:13" id="vRr-M4-iYi"/>
-                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -101,6 +90,7 @@
                             <constraint firstAttribute="right" secondItem="AFK-ax-anq" secondAttribute="right" id="gnZ-Hl-FzQ"/>
                             <constraint firstItem="svX-YK-KHv" firstAttribute="width" secondItem="AFK-ax-anq" secondAttribute="width" multiplier="0.8" id="ikk-eU-f26" userLabel="Toolbar.width = 0.8 × bg.width"/>
                             <constraint firstItem="7w9-w2-COM" firstAttribute="centerY" secondItem="AFK-ax-anq" secondAttribute="centerY" id="lSm-B5-3bb"/>
+                            <constraint firstItem="7w9-w2-COM" firstAttribute="top" secondItem="svX-YK-KHv" secondAttribute="bottom" id="pkv-mu-VSV"/>
                             <constraint firstItem="7w9-w2-COM" firstAttribute="width" secondItem="AFK-ax-anq" secondAttribute="width" multiplier="0.8" id="quK-4C-RQu"/>
                             <constraint firstItem="AFK-ax-anq" firstAttribute="left" secondItem="8bC-Xf-vdC" secondAttribute="left" id="voo-i6-cNb"/>
                             <constraint firstItem="7w9-w2-COM" firstAttribute="centerX" secondItem="AFK-ax-anq" secondAttribute="centerX" id="zhN-fh-hwc"/>
@@ -110,7 +100,6 @@
                         <outlet property="autoRunBtn" destination="uGd-MR-RVn" id="BMZ-kw-bX6"/>
                         <outlet property="grid" destination="7w9-w2-COM" id="dcR-HU-Tjg"/>
                         <outlet property="oneStepBtn" destination="FAJ-i4-pTG" id="Rip-PF-kI2"/>
-                        <outlet property="spirit" destination="2xB-es-jLQ" id="rqw-tH-Cwr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -120,7 +109,6 @@
     </scenes>
     <resources>
         <image name="bg" width="1104" height="621"/>
-        <image name="pet1" width="72" height="60"/>
         <image name="share_btn_normal" width="100" height="50"/>
         <image name="share_btn_pressed" width="100" height="50"/>
     </resources>
