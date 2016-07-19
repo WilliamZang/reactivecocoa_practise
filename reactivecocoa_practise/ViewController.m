@@ -27,6 +27,16 @@ typedef NS_ENUM(NSUInteger, SpiritState) {
     SpiritStateDisappear,
 };
 
+typedef NS_ENUM(NSUInteger, ControlState) {
+    ControlStateStop,
+    ControlStateAuto,
+    ControlStateOneStep,
+};
+
+NSNumber *(^addFunction)(NSNumber *a, NSNumber *b) = ^NSNumber *(NSNumber *a, NSNumber *b) {
+    return @(a.integerValue + b.integerValue);
+};
+
 @implementation ViewController
 
 - (void)viewDidLoad {
@@ -47,15 +57,14 @@ typedef NS_ENUM(NSUInteger, SpiritState) {
     
     RACTuple *startBlock = RACTuplePack(@1, @2);
     
-    RACSequence *stepsSequence = steps.rac_sequence;
-    
     NSInteger spiritCount = steps.count + 1; // 步数 + 1个起始位置
     
     void (^updateXYConstraints)(UIView *view, RACTuple *location) = ^(UIView *view, RACTuple *location) {
         CGFloat width = self.grid.frame.size.width / GridXBlocks;
         CGFloat height = self.grid.frame.size.height / GridYBlocks;
-        CGFloat x = [location.first floatValue] * width;
-        CGFloat y = [location.second floatValue] * height;
+        RACTupleUnpack(NSNumber *locationX, NSNumber *locationY) = location;
+        CGFloat x = [locationX floatValue] * width;
+        CGFloat y = [locationY floatValue] * height;
         view.frame = CGRectMake(x, y, width, height);
     };
     
@@ -71,16 +80,64 @@ typedef NS_ENUM(NSUInteger, SpiritState) {
         updateXYConstraints(spiritView, startBlock);
     }
     
+    RACSequence *stepsSequence = steps.rac_sequence;
+    
+    stepsSequence = [stepsSequence scanWithStart:startBlock reduce:^id(RACTuple *running, RACTuple *next) {
+        RACTupleUnpack(NSNumber *x1, NSNumber *y1) = running;
+        RACTupleUnpack(NSNumber *x2, NSNumber *y2) = next;
+        return RACTuplePack(addFunction(x1, x2), addFunction(y1, y2));
+    }];
+    
+    RACSignal *stepsSignal = stepsSequence.signal;
+    stepsSignal = [[stepsSignal map:^id(id value) {
+        return [[RACSignal return:value] delay:1];
+    }] concat];
+    
+    RACSignal *(^newSpiritSignal)(NSNumber *idx) = ^RACSignal *(NSNumber *idx) {
+        RACSignal *head = [RACSignal return:RACTuplePack(idx,
+                                                         @(SpiritStateAppear),
+                                                         startBlock)];
+        
+        RACSignal *running = [stepsSignal map:^id(RACTuple *xy) {
+            return RACTuplePack(idx, @(SpiritStateRunning), xy);
+        }];
+        
+        RACSignal *end = [RACSignal return:RACTuplePack(idx,
+                                                        @(SpiritStateDisappear),
+                                                        nil)];
+    
+        return [[head concat:running] concat:end];
+    };
+    
+    RACSignal *timerSignal = [[RACSignal interval:1.5 onScheduler:[RACScheduler mainThreadScheduler]] startWith:nil];
+    
+    RACSignal *autoBtnClickSignal = [[self.autoRunBtn rac_signalForControlEvents:UIControlEventTouchUpInside] mapReplace:@(ControlStateAuto)];
+    RACSignal *oneStepBtnClickSignal = [[self.oneStepBtn rac_signalForControlEvents:UIControlEventTouchUpInside] mapReplace:@(ControlStateOneStep)];
+    
+    RACSignal *clickSignal = [RACSignal merge:@[autoBtnClickSignal, oneStepBtnClickSignal]];
+    
+    clickSignal = [clickSignal scanWithStart:@(ControlStateStop) reduce:^id(NSNumber *running, NSNumber *next) {
+        if ([running isEqual:next] && [running isEqual:@(ControlStateAuto)]) {
+            // 如果上一次和这一次都是auto状态，就转换为stop状态
+            return @(ControlStateStop);
+        }
+        return next;
+    }];
+    RACSignal *stepSignal = [RACSignal switch:clickSignal
+                                        cases:@{@(ControlStateAuto): timerSignal,
+                                                @(ControlStateOneStep): [RACSignal return:nil]
+                                                }
+                                      default:[RACSignal empty]];
     
     
+    RACSignal *runSignal = [stepSignal scanWithStart:@-1 reduce:^id(NSNumber *running, id _) {
+        NSInteger idx = running.integerValue;
+        ++idx;
+        if (idx == spiritCount) { idx = 0 ;}
+        return @(idx);
+    }];
     
-    
-    
-    
-    
-    
-    
-    RACSignal *spiritRunSignal = nil;
+    RACSignal *spiritRunSignal = [runSignal flattenMap:newSpiritSignal];
     @weakify(self)
     [[spiritRunSignal deliverOnMainThread] subscribeNext:^(RACTuple *info) {
         @strongify(self)
