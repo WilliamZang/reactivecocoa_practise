@@ -16,3 +16,17 @@ void rac_playground()
         NSLog(@"%@", x);
     }];
 }
+
+void asyncFeature()
+{
+    NSURL *url = [NSURL URLWithString:@"http://xxxx.com/"];
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url];
+    
+}
+
+void eventFeature()
+{
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    
+}
