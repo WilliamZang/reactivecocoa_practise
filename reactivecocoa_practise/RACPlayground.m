@@ -45,6 +45,55 @@
     }];
 }
 
++ (RACSignal *)myMerge_:(id<NSFastEnumeration>)signals
+{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        for (RACSignal *signal in signals) {
+            [signal subscribeNext:^(id x) {
+                [subscriber sendNext:x];
+            } error:^(NSError *error) {
+                [subscriber sendError:error];
+            } completed:^{
+                [subscriber sendCompleted];
+            }];
+        }
+        return nil;
+    }];
+}
+
++ (RACSignal *)myMerge:(id<NSFastEnumeration>)signals
+{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        RACCompoundDisposable *mainDisposable = [[RACCompoundDisposable alloc] init];
+        for (RACSignal *signal in signals) {
+            [mainDisposable addDisposable:[signal subscribeNext:^(id x) {
+                [subscriber sendNext:x];
+            } error:^(NSError *error) {
+                [subscriber sendError:error];
+                [mainDisposable dispose];
+            } completed:^{
+                [subscriber sendCompleted];
+                [mainDisposable dispose];
+            }]];
+        }
+        return mainDisposable;
+    }];
+}
+
+- (RACSignal *)myConcat:(RACSignal *)signal
+{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        RACSerialDisposable *mainDisposable = [[RACSerialDisposable alloc] init];
+        mainDisposable.disposable = [self subscribeNext:^(id x) {
+            [subscriber sendNext:x];
+        } error:^(NSError *error) {
+            [subscriber sendError:error];
+        } completed:^{
+            mainDisposable.disposable = [signal subscribe:subscriber];
+        }];
+        return mainDisposable;
+    }];
+}
 @end
 
 
@@ -253,6 +302,97 @@ void signalTransform()
             NSLog(@"Subscriber 1 receive complete");
         }];
     }];
+}
+
+void disposableCase1()
+{
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@1];
+        [RACScheduler.mainThreadScheduler afterDelay:2 schedule:^{
+            [subscriber sendNext:@2];
+            [subscriber sendCompleted];
+        }];
+        
+        return [RACDisposable disposableWithBlock:^{
+            NSLog(@"dispose!!!");
+        }];
+    }];
+    
+    RACDisposable *disposable = [signal subscribeNext:^(id x) {
+        NSLog(@"next: %@", x);
+    } completed:^{
+        NSLog(@"complete");
+    }];
+    
+    [RACScheduler.mainThreadScheduler afterDelay:1 schedule:^{
+        [disposable dispose];
+    }];
+}
+
+void disposableCase2()
+{
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@1];
+        RACDisposable *disposable1 = [RACScheduler.mainThreadScheduler afterDelay:2 schedule:^{
+            [subscriber sendNext:@2];
+            
+        }];
+        
+        RACDisposable *disposable2 = [RACScheduler.mainThreadScheduler afterDelay:2 schedule:^{
+            [subscriber sendCompleted];
+        }];
+        
+        
+        return [RACDisposable disposableWithBlock:^{
+            [disposable1 dispose];
+            [disposable2 dispose];
+            NSLog(@"dispose!!!");
+        }];
+    }];
+    
+    RACDisposable *disposable = [signal subscribeNext:^(id x) {
+        NSLog(@"next: %@", x);
+    } completed:^{
+        NSLog(@"complete");
+    }];
+    
+    [RACScheduler.mainThreadScheduler afterDelay:1 schedule:^{
+        [disposable dispose];
+    }];
+}
+
+@interface SomeClass : NSObject
+
+@property (nonatomic, strong) id someProp;
+
+@end
+
+void scopedDisposable()
+{
+    SomeClass *self = nil;
+    
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@1];
+        RACDisposable *disposable1 = [RACScheduler.mainThreadScheduler afterDelay:2 schedule:^{
+            [subscriber sendNext:@2];
+            
+        }];
+        RACDisposable *disposable2 = [RACScheduler.mainThreadScheduler afterDelay:2 schedule:^{
+            [subscriber sendCompleted];
+        }];
+        return [RACDisposable disposableWithBlock:^{
+            [disposable1 dispose];
+            [disposable2 dispose];
+            NSLog(@"dispose!!!");
+        }];
+    }];
+    RACDisposable *disposable = [signal subscribeNext:^(id x) {
+        NSLog(@"next: %@", x);
+    } completed:^{
+        NSLog(@"complete");
+    }];
+    self.someProp = disposable.asScopedDisposable;
+    
 }
 void rac_playground()
 {
