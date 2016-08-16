@@ -9,6 +9,7 @@
 #import "RACPlayground.h"
 #import <ReactiveCocoa.h>
 #import <AFNetworking.h>
+#import <UIKit/UIKit.h>
 
 void rac_playground()
 {
@@ -16,6 +17,7 @@ void rac_playground()
     [signal subscribeNext:^(id x) {
         NSLog(@"%@", x);
     }];
+    
 }
 
 void asyncFeature()
@@ -44,7 +46,9 @@ RACSignal *asyncGet(NSString *url)
     return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         NSURL *baseURL = [NSURL URLWithString:@"http://someURL/"];
         AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL];
-        NSURLSessionDataTask *op = [manager GET:url parameters:@{@"a": @"b"} progress:^(NSProgress * _Nonnull downloadProgress) {
+        NSURLSessionDataTask *op = [manager GET:url
+                                     parameters:@{@"a": @"b"}
+                                       progress:^(NSProgress * _Nonnull downloadProgress) {
             [subscriber sendNext:RACTuplePack(@(RequestStateProgress), downloadProgress)];
         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [subscriber sendNext:RACTuplePack(@(RequestStateResponse), responseObject)];
@@ -64,6 +68,9 @@ RACSignal *asyncGet(NSString *url)
 
 - (void)onButtonClick:(UIButton *)button;
 
+@property (nonatomic, strong) id someProp;
+@property (nonatomic, weak) id someOtherProp;
+
 @end
 
 @implementation SomeObjClass
@@ -78,7 +85,156 @@ RACSignal *asyncGet(NSString *url)
     // something todo
 }
 
+- (void)noBlockRetain
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.someProp = @5;
+    });
+}
+
+- (void)retainCycleWhenCreate
+{
+    self.someProp = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        NSLog(@"self is %@", self);
+        [subscriber sendNext:self.someOtherProp];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+    
+    self.someProp = [RACSignal return:self];
+    
+    self.someProp = [[RACSignal return:@1] map:^id(id value) {
+        return [NSString stringWithFormat:@"%@%@", self, value];
+    }];
+}
+
+- (RACSignal *)makeNewSignal
+{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:self.someProp];
+        [subscriber sendNext:self.someOtherProp];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+}
+
+- (void)retainCycleWhenSubscribe
+{
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [[button rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(id x) {
+        self.someOtherProp = x;
+    }];
+    self.someProp = button;
+}
+
+- (void)noReatinCycleWhenSubscribe
+{
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@1];
+        [subscriber sendCompleted];
+        return nil;
+    }];
+    self.someProp = signal;
+    
+    [signal subscribeNext:^(id x) {
+        NSLog(@"%@", x);
+    }];
+}
+
+- (void)badObserveMarco
+{
+    SomeObjClass *someOther = [SomeObjClass new];
+    
+    RACSignal *signal = [[RACSignal return:@1] flattenMap:^RACStream *(id value) {
+        return RACObserve(someOther, someProp);
+    }];
+    self.someProp = signal;
+    
+}
+
 @end
+
+void retainCycle()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    SomeObjClass *b = [SomeObjClass new];
+    a.someProp = b;
+    b.someProp = a;
+
+    
+}
+
+void blockRetainCycle()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    a.someProp = ^ {
+        NSLog(@"%@", a);
+    };
+}
+
+void noRetainCycle()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    SomeObjClass *b = [SomeObjClass new];
+    a.someProp = b;
+    b.someOtherProp = a;
+
+}
+
+
+void noBlockRetainCycle()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    __weak SomeObjClass *weakA = a;
+    a.someProp = ^ {
+        NSLog(@"%@", weakA);
+    };
+    
+    
+}
+
+
+
+void breakRetainCycle()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    SomeObjClass *b = [SomeObjClass new];
+    a.someProp = b;
+    b.someProp = a;
+
+    a.someProp = nil;
+    
+    a.someProp = ^ {
+        NSLog(@"%@", a);
+    };
+    
+    a.someProp = nil;
+}
+
+void useWeakifyStrongify()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    @weakify(a)
+    a.someProp = ^ {
+        NSLog(@"%@", a);
+        @strongify(a)
+        NSLog(@"%@", a);
+    };
+}
+
+void nestedBlocksStrongify()
+{
+    SomeObjClass *a = [SomeObjClass new];
+    @weakify(a)
+    a.someProp = ^ {
+        @strongify(a)
+        SomeObjClass *b = [SomeObjClass new];
+        a.someProp = ^{
+            a.someOtherProp = b;
+        };
+    };
+    
+}
 
 void eventFeature()
 {
@@ -105,8 +261,11 @@ void eventFeatureSignal()
     NSObject *webViewDelegate = [[NSObject alloc] init];
     webView.delegate = (id<UIWebViewDelegate>)webViewDelegate;
     
-    RACSignal *statLoadSignal = [webViewDelegate rac_signalForSelector:@selector(webViewDidStartLoad:) fromProtocol:@protocol(UIWebViewDelegate)];
+    RACSignal *statLoadSignal = [webViewDelegate rac_signalForSelector:@selector(webViewDidStartLoad:)
+                                                          fromProtocol:@protocol(UIWebViewDelegate)];
 }
+
+
 
 
 @interface SomeViewController : UIViewController
@@ -181,4 +340,37 @@ void badCase2()
         return str;
     }];
     
+}
+
+void useCommandProcessError()
+{
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@1];
+        if (rand() > 0.5) {
+            [subscriber sendError:[NSError errorWithDomain:@"" code:1 userInfo:nil]];
+        }
+        [subscriber sendCompleted];
+        return nil;
+    }];
+    
+    RACSignal *signal2 = [RACSignal interval:1 onScheduler:[RACScheduler mainThreadScheduler]];
+    [[signal2 flattenMap:^RACStream *(id value) {
+        return signal;
+    }] subscribeNext:^(id x) {
+        // ?
+    }];
+    
+    RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
+        return signal;
+    }];
+    
+    [command rac_liftSelector:@selector(execute:) withSignals:signal2, nil];
+    
+    [[command.executionSignals switchToLatest] subscribeNext:^(id x) {
+        
+    }];
+    
+    [command.errors subscribeNext:^(id x) {
+        
+    }];
 }

@@ -10,11 +10,14 @@
 		B0DF608DD8BCDBAB4706D812 /* libPods-reactivecocoa_practise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCEED05E7FFA6265606AA095 /* libPods-reactivecocoa_practise.a */; };
 		B9566C921D16F188006DC534 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B9566C911D16F188006DC534 /* main.m */; };
 		B9566C951D16F188006DC534 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B9566C941D16F188006DC534 /* AppDelegate.m */; };
-		B9566C981D16F188006DC534 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B9566C971D16F188006DC534 /* ViewController.m */; };
+		B9566C981D16F188006DC534 /* RACCommandDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B9566C971D16F188006DC534 /* RACCommandDemoViewController.m */; };
 		B9566C9B1D16F188006DC534 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B9566C991D16F188006DC534 /* Main.storyboard */; };
 		B9566C9D1D16F188006DC534 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9566C9C1D16F188006DC534 /* Assets.xcassets */; };
 		B9566CA01D16F188006DC534 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B9566C9E1D16F188006DC534 /* LaunchScreen.storyboard */; };
 		B9566CA91D16F28B006DC534 /* RACPlayground.m in Sources */ = {isa = PBXBuildFile; fileRef = B9566CA81D16F28B006DC534 /* RACPlayground.m */; };
+		B99C3E2A1D5C27DF002AF5DA /* RACChannelDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B99C3E291D5C27DF002AF5DA /* RACChannelDemoViewController.m */; };
+		B99C3E2D1D5D7111002AF5DA /* RetainCycleDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B99C3E2C1D5D7111002AF5DA /* RetainCycleDemoViewController.m */; };
+		B99C3E301D61E8F1002AF5DA /* UITableViewCellDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B99C3E2F1D61E8F1002AF5DA /* UITableViewCellDemoViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,14 +27,20 @@
 		B9566C911D16F188006DC534 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B9566C931D16F188006DC534 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B9566C941D16F188006DC534 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		B9566C961D16F188006DC534 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		B9566C971D16F188006DC534 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B9566C961D16F188006DC534 /* RACCommandDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RACCommandDemoViewController.h; sourceTree = "<group>"; };
+		B9566C971D16F188006DC534 /* RACCommandDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RACCommandDemoViewController.m; sourceTree = "<group>"; };
 		B9566C9A1D16F188006DC534 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B9566C9C1D16F188006DC534 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B9566C9F1D16F188006DC534 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B9566CA11D16F188006DC534 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B9566CA71D16F28B006DC534 /* RACPlayground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RACPlayground.h; sourceTree = "<group>"; };
 		B9566CA81D16F28B006DC534 /* RACPlayground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACPlayground.m; sourceTree = "<group>"; };
+		B99C3E281D5C27DF002AF5DA /* RACChannelDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RACChannelDemoViewController.h; sourceTree = "<group>"; };
+		B99C3E291D5C27DF002AF5DA /* RACChannelDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACChannelDemoViewController.m; sourceTree = "<group>"; };
+		B99C3E2B1D5D7111002AF5DA /* RetainCycleDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetainCycleDemoViewController.h; sourceTree = "<group>"; };
+		B99C3E2C1D5D7111002AF5DA /* RetainCycleDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetainCycleDemoViewController.m; sourceTree = "<group>"; };
+		B99C3E2E1D61E8F1002AF5DA /* UITableViewCellDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITableViewCellDemoViewController.h; sourceTree = "<group>"; };
+		B99C3E2F1D61E8F1002AF5DA /* UITableViewCellDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITableViewCellDemoViewController.m; sourceTree = "<group>"; };
 		BCEED05E7FFA6265606AA095 /* libPods-reactivecocoa_practise.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-reactivecocoa_practise.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -87,15 +96,21 @@
 			children = (
 				B9566C931D16F188006DC534 /* AppDelegate.h */,
 				B9566C941D16F188006DC534 /* AppDelegate.m */,
-				B9566C961D16F188006DC534 /* ViewController.h */,
-				B9566C971D16F188006DC534 /* ViewController.m */,
+				B9566C961D16F188006DC534 /* RACCommandDemoViewController.h */,
+				B9566C971D16F188006DC534 /* RACCommandDemoViewController.m */,
 				B9566C991D16F188006DC534 /* Main.storyboard */,
+				B99C3E2E1D61E8F1002AF5DA /* UITableViewCellDemoViewController.h */,
+				B99C3E2F1D61E8F1002AF5DA /* UITableViewCellDemoViewController.m */,
 				B9566C9C1D16F188006DC534 /* Assets.xcassets */,
 				B9566C9E1D16F188006DC534 /* LaunchScreen.storyboard */,
 				B9566CA11D16F188006DC534 /* Info.plist */,
 				B9566C901D16F188006DC534 /* Supporting Files */,
 				B9566CA71D16F28B006DC534 /* RACPlayground.h */,
 				B9566CA81D16F28B006DC534 /* RACPlayground.m */,
+				B99C3E281D5C27DF002AF5DA /* RACChannelDemoViewController.h */,
+				B99C3E291D5C27DF002AF5DA /* RACChannelDemoViewController.m */,
+				B99C3E2B1D5D7111002AF5DA /* RetainCycleDemoViewController.h */,
+				B99C3E2C1D5D7111002AF5DA /* RetainCycleDemoViewController.m */,
 			);
 			path = reactivecocoa_practise;
 			sourceTree = "<group>";
@@ -229,9 +244,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9566C981D16F188006DC534 /* ViewController.m in Sources */,
+				B99C3E2A1D5C27DF002AF5DA /* RACChannelDemoViewController.m in Sources */,
+				B99C3E2D1D5D7111002AF5DA /* RetainCycleDemoViewController.m in Sources */,
+				B9566C981D16F188006DC534 /* RACCommandDemoViewController.m in Sources */,
 				B9566CA91D16F28B006DC534 /* RACPlayground.m in Sources */,
 				B9566C951D16F188006DC534 /* AppDelegate.m in Sources */,
+				B99C3E301D61E8F1002AF5DA /* UITableViewCellDemoViewController.m in Sources */,
 				B9566C921D16F188006DC534 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
